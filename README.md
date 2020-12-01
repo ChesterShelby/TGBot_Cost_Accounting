@@ -1,1 +1,1 @@
-# TGBot_Cost_Accounting.
+# TGBot_Cost_Accounting
