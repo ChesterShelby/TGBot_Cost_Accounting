@@ -7,8 +7,8 @@ bot = telebot.TeleBot(TOKEN_BOT)
 db = RegistRation()
 keyboard1 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
 keyboard1.row('/start', '/регистрация')
-keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-keyboard2.row('/Создать таблицу', '/calculator')
+#keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+#keyboard2.row('/table', '/calculator', '/deletetable')
 
 
 @bot.message_handler(commands=['start'])
@@ -20,13 +20,20 @@ def start_message(message):
 
 @bot.message_handler(commands=['регистрация'])
 def register(message):
-    print(1)
     db.adduser(message.from_user.id, message)
+    print('Зарегистрирован новый пользователь')
 
 
-@bot.message_handler(commands=['Создать таблицу'])
-def createtable():
-    
+@bot.message_handler(commands=['table'])
+def createtable(message):
+    db.createtable(message.from_user.id, message)
+    print('Создана таблица для пользователя')
+
+
+@bot.message_handler(commands=['deletetable'])
+def deletetable(message):
+    db.deletetable(message.from_user.id, message)
+    print('Удалена таблица пользователя')
 
 
 @bot.message_handler(commands=['calculator'])
