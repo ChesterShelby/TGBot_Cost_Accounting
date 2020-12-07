@@ -1,10 +1,8 @@
 import telebot
 from information import TOKEN_BOT
 from registration_users import RegistRation
-from work_with_table import WorkWithTable
 
 
-wwt = WorkWithTable()
 bot = telebot.TeleBot(TOKEN_BOT)
 db = RegistRation()
 keyboard1 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -23,19 +21,12 @@ def start_message(message):
 @bot.message_handler(commands=['регистрация'])
 def register(message):
     print(1)
-    if db.user_exists(message.from_user.id):
-        print('Пользователь попытался заново зарегистрироваться')
-        bot.send_message(message.chat.id, "Вы уже зарегистрированы", reply_markup=keyboard2)
-    else:
-        db.add_user(message.from_user.id)
-        print('Зарегистрирован новый пользователь')
-        bot.send_message(message.chat.id, "Вы успешно зарегистрировались", reply_markup=keyboard2)
-    db.close()
+    db.adduser(message.from_user.id, message)
 
 
 @bot.message_handler(commands=['Создать таблицу'])
 def createtable():
-    wwt.create_table()
+    
 
 
 @bot.message_handler(commands=['calculator'])
