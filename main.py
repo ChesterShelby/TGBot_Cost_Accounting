@@ -7,8 +7,13 @@ bot = telebot.TeleBot(TOKEN_BOT)
 db = RegistRation()
 keyboard1 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
 keyboard1.row('/start', '/регистрация')
-#keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-#keyboard2.row('/table', '/calculator', '/deletetable')
+keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+keyboard2.row('/table', '/calculator')
+keyboard3 = telebot.types.InlineKeyboardMarkup()
+keyboard3.row(telebot.types.InlineKeyboardButton('Да', callback_data='yes'),
+              telebot.types.InlineKeyboardButton('Нет', callback_data='no'))
+
+
 
 
 @bot.message_handler(commands=['start'])
@@ -25,13 +30,16 @@ def register(message):
 
 
 @bot.message_handler(commands=['table'])
-def createtable(message):
+def create_table(message):
     db.createtable(message.from_user.id, message)
+    db.everyday(message.from_user.id)
     print('Создана таблица для пользователя')
 
 
 @bot.message_handler(commands=['deletetable'])
-def deletetable(message):
+def delete_table(message):
+    bot.send_message(message.chat.id, 'Ты уверен? Все твои расходы и данные о тебе будут удалены...',
+                     reply_markup=keyboard3)
     db.deletetable(message.from_user.id, message)
     print('Удалена таблица пользователя')
 

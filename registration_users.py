@@ -1,5 +1,6 @@
 import sqlite3
 import telebot
+import datetime
 from information import TOKEN_BOT
 bot = telebot.TeleBot(TOKEN_BOT)
 keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -29,8 +30,7 @@ class RegistRation:
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
         self.cursor.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}' (
-        День_недели TEXT,
-        Транспорт INTEGER
+        Категория TEXT
         )""")
         self.connection.commit()
         self.cursor.close()
@@ -39,7 +39,15 @@ class RegistRation:
     def deletetable(self, user_id, message):
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
-        self.cursor.execute(f"DELETE TABLE '{user_id}'")
+        self.cursor.execute(f"DROP TABLE '{user_id}'")
         self.connection.commit()
         self.cursor.close()
         bot.send_message(message.chat.id, 'Ня.пока...', reply_markup=keyboard2)
+
+    def everyday(self, user_id):
+        self.connection = sqlite3.connect('db.db')
+        self.cursor = self.connection.cursor()
+        date = datetime.date.today()
+        self.cursor.execute(f"SELECT '{date}' FROM '{user_id}'")
+        if self.cursor.fetchone() is None:
+            self.cursor.execute(f"""ALTER TABLE '{user_id}' ADD COLUMN '{date}' INTEGER""")
