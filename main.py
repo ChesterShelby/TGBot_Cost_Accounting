@@ -1,4 +1,5 @@
 import telebot
+import sqlite3
 from information import TOKEN_BOT
 from registration_users import RegistRation
 
@@ -12,7 +13,7 @@ keyboard2.row('/table', '/calculator')
 keyboard3 = telebot.types.InlineKeyboardMarkup()
 keyboard3.row(telebot.types.InlineKeyboardButton('Да', callback_data='yes'),
               telebot.types.InlineKeyboardButton('Нет', callback_data='no'))
-
+sent = None
 
 
 
@@ -34,6 +35,28 @@ def create_table(message):
     db.createtable(message.from_user.id, message)
     db.everyday(message.from_user.id)
     print('Создана таблица для пользователя')
+    take_categories(message)
+
+
+def take_categories(message):
+    global sent
+    sent = bot.send_message(message.from_user.id, 'Напиши категории затрат через пробел', reply_markup=keyboard2)
+    bot.register_next_step_handler(sent, add_categories)
+    add_categories(message)
+
+
+def add_categories(message):
+    global sent
+    connection = sqlite3.connect('db.db')
+    cursor = connection.cursor()
+    sent = message.text
+    sent = str(sent)
+    categories = sent.split(' ')
+    for i in range(len(categories)):
+        cursor.execute(f"""INSERT INTO '{user_id}' (Categories) VALUES (?)""", categories[i])
+    #bot.send_message(message.chat.id, sent)
+    connection.commit()
+    cursor.close()
 
 
 @bot.message_handler(commands=['deletetable'])
