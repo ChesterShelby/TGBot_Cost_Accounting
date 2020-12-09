@@ -30,11 +30,11 @@ class RegistRation:
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
         self.cursor.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}' (
-        Категория TEXT
+        Categories TEXT
         )""")
         self.connection.commit()
         self.cursor.close()
-        bot.send_message(message.chat.id, 'Создаем ради тебя целую таблицу...', reply_markup=keyboard2)
+
 
     def deletetable(self, user_id, message):
         self.connection = sqlite3.connect('db.db')
@@ -51,3 +51,24 @@ class RegistRation:
         self.cursor.execute(f"SELECT '{date}' FROM '{user_id}'")
         if self.cursor.fetchone() is None:
             self.cursor.execute(f"""ALTER TABLE '{user_id}' ADD COLUMN '{date}' INTEGER""")
+        self.connection.commit()
+        self.cursor.close()
+
+    def take_categories(self, user_id, message):
+        sent = bot.send_message(message.from_user.id, 'Напиши категории затрат через пробел', reply_markup=keyboard2)
+        bot.register_next_step_handler(sent, self.add_categories(user_id, message))
+
+    def add_categories(self, user_id, message):
+        self.connection = sqlite3.connect('db.db')
+        self.cursor = self.connection.cursor()
+        sent = message.text
+        sent = str(sent)
+        categories = sent.split(' ')
+        for i in range(len(categories)):
+            print(categories[i])
+            # cursor.execute(f"""INSERT INTO '{user_id}' (Categories) VALUES (?)""", categories[i])
+        bot.send_message(message.chat.id, sent)
+        self.connection.commit()
+        self.cursor.close()
+
+
