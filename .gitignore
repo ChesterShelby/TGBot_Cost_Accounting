@@ -1,5 +1,5 @@
 # ignor Token bot
-information.py
+/information.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
