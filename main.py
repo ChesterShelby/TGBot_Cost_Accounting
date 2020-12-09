@@ -1,6 +1,6 @@
 import telebot
 import sqlite3
-from information import TOKEN_BOT
+from token import TOKEN_BOT
 from registration_users import RegistRation
 
 
@@ -9,10 +9,12 @@ db = RegistRation()
 keyboard1 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
 keyboard1.row('/start', '/регистрация')
 keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-keyboard2.row('/table', '/calculator')
+keyboard2.row('/table', '/calculator', '/deletetable')
 keyboard3 = telebot.types.InlineKeyboardMarkup()
 keyboard3.row(telebot.types.InlineKeyboardButton('Да', callback_data='yes'),
               telebot.types.InlineKeyboardButton('Нет', callback_data='no'))
+keyboard4 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+
 
 
 @bot.message_handler(commands=['start'])
@@ -30,7 +32,7 @@ def register(message):
 @bot.message_handler(commands=['table'])
 def create_table(message):
     db.createtable(message.from_user.id, message)
-    #db.everyday(message.from_user.id)
+    db.everyday(message.from_user.id)
     print('Создана таблица для пользователя')
     bot.send_message(message.chat.id, 'Создаем ради тебя целую таблицу...')
     take_categories(message)
@@ -51,8 +53,8 @@ def add_categories(message):
     print(categories)
     print(user_id)
     for i in range(len(categories)):
-        print(categories[i])
         cursor.execute(f"""INSERT INTO '{user_id}' (Categories) VALUES (?)""", (categories[i],))
+    bot.send_message(message.from_user.id, 'Таблица создана', reply_markup=keyboard2)
     connection.commit()
     cursor.close()
 
@@ -61,8 +63,23 @@ def add_categories(message):
 def delete_table(message):
     bot.send_message(message.chat.id, 'Ты уверен? Все твои расходы и данные о тебе будут удалены...',
                      reply_markup=keyboard3)
-    db.deletetable(message.from_user.id, message)
-    print('Удалена таблица пользователя')
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def answer(call):
+    if call.data == 'yes':
+        db.deletetable(call.message.chat.id)
+        print('Удалена таблица пользователя')
+        bot.send_message(call.message.chat.id, 'Таблица удалена')
+    elif call.data == 'no':
+        bot.send_message(call.message.chat.id, 'Хорошо, продолжаем', reply_markup=keyboard4)
+
+@bot.message_handler(commands=['lol'])
+def add_costs(message):
+    db.get_categories(message)
+
+
+
 
 
 bot.polling(none_stop=True, interval=0)
