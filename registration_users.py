@@ -34,7 +34,7 @@ class RegistRation:
         )""")
         self.connection.commit()
         self.cursor.close()
-        bot.send_message(message.chat.id, 'Создаем ради тебя целую таблицу...', reply_markup=keyboard2)
+
 
     def deletetable(self, user_id, message):
         self.connection = sqlite3.connect('db.db')
@@ -55,17 +55,20 @@ class RegistRation:
         self.cursor.close()
 
     def take_categories(self, user_id, message):
-        sent = bot.send_message(message.chat.id, 'Напиши категории затрат через пробел')
-        bot.register_next_step_handler(sent, self.add_categories(user_id, message, sent))
+        sent = bot.send_message(message.from_user.id, 'Напиши категории затрат через пробел', reply_markup=keyboard2)
+        bot.register_next_step_handler(sent, self.add_categories(user_id, message))
 
-    def add_categories(self, user_id, message, sent):
+    def add_categories(self, user_id, message):
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
         sent = message.text
+        sent = str(sent)
         categories = sent.split(' ')
-        #for i in range(len(categories)):
-            #self.cursor.execute(f"""INSERT INTO '{user_id}' (Categories) VALUES (?)""", categories[i])
-        bot.send_message(message.chat.id, categories)
+        for i in range(len(categories)):
+            print(categories[i])
+            # cursor.execute(f"""INSERT INTO '{user_id}' (Categories) VALUES (?)""", categories[i])
+        bot.send_message(message.chat.id, sent)
         self.connection.commit()
         self.cursor.close()
+
 
