@@ -1,7 +1,6 @@
 # ignor Token bot
 information.py
 
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
