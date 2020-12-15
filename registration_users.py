@@ -1,10 +1,11 @@
 import sqlite3
 import telebot
 import datetime
-from token import TOKEN_BOT
-bot = telebot.TeleBot(TOKEN_BOT)
+from tokenBot import TOKEN
+
+bot = telebot.TeleBot(TOKEN)
 keyboard2 = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-keyboard2.row('/table', '/calculator')
+keyboard2.row('Создать таблицу', 'Калькулятор', 'Удалить таблицу', 'lol')
 
 
 class RegistRation:
@@ -13,6 +14,7 @@ class RegistRation:
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
         self.connection.commit()
+        self.cursor.close()
 
     def adduser(self, user_id, message):
         self.connection = sqlite3.connect('db.db')
@@ -30,6 +32,7 @@ class RegistRation:
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
         self.cursor.execute(f"""CREATE TABLE IF NOT EXISTS '{user_id}' (
+        id Integer PRIMARY KEY AUTOINCREMENT,
         Categories TEXT
         )""")
         self.connection.commit()
@@ -53,14 +56,6 @@ class RegistRation:
         self.connection.commit()
         self.cursor.close()
 
-    def get_categories(self, message):
-        self.connection = sqlite3.connect('db.db')
-        self.cursor = self.connection.cursor()
-        user_id = message.chat.id
-        result = self.cursor.description(f"SELECT Categories FROM '{user_id}'").fetchall()
-        bot.send_message(message.chat.id, result)
-        bot.send_message(message.chat.id, "Напиши категорию в которую хочешь вставить  данные", result)
-
     def add_expenses(self, user_id):
         self.connection = sqlite3.connect('db.db')
         self.cursor = self.connection.cursor()
@@ -68,7 +63,3 @@ class RegistRation:
         self.cursor.execute(f"INSERT INTO '{user_id}' (Categories, {date}) VALUES ()")
         self.connection.commit()
         self.cursor.close()
-
-
-
-
