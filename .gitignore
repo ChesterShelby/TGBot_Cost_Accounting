@@ -1,9 +1,7 @@
 # ignor Token bot
-<<<<<<< HEAD
 tokenBot.py
-=======
 token.py
->>>>>>> 8d09b85187168b4e0afa1a3ba2b2d40c59b2295e
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
